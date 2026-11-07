@@ -206,8 +206,7 @@ This project is open source and available under the MIT License.
 
 ## Team
 
-RoadGuardian is developed by **Team X_Coder**:
-- Project: [manikantad24-web/Road-Safety](https://github.com/manikantad24-web/Road-Safety)
+RoadGuardian is developed by **Team X_Coder**
 
 ## Acknowledgments
 

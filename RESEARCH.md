@@ -2,7 +2,7 @@
 
 This document compiles research references, repositories, and datasets relevant to the RoadGuardian project.
 
-**Project:** [manikantad24-web/Road-Safety](https://github.com/manikantad24-web/Road-Safety) (RoadGuardian, Team X_Coder)
+**Project:** RoadGuardian by Team X_Coder
 **Last Updated:** 4 Nov 2026
 
 ---
