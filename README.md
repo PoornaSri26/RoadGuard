@@ -1,216 +1,134 @@
 # RoadGuardian 🛡️
 
-**Road damage detection and safe route planning using AI**
+[![Deploy to GitHub Pages](https://github.com/PoornaSri26/RoadGuard/actions/workflows/deploy.yml/badge.svg)](https://github.com/PoornaSri26/RoadGuard/actions/workflows/deploy.yml)
+[![Version](https://img.shields.io/badge/version-2.5.0-amber.svg)](https://github.com/PoornaSri26/RoadGuard)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-RoadGuardian is a community-driven road safety platform that combines AI-powered damage detection with crowdsourced verification to help travelers find safer routes. Users can report road hazards (potholes, cracks, etc.) by uploading photos, which are analyzed by a YOLOv8 model trained on the RDD2022 dataset. Reports are verified by the community, and the system calculates risk scores to recommend safer routes using OSRM routing.
+> **AI-Powered Road Damage Detection & Intelligent Safe-Corridor Navigation**
 
-## Features
+RoadGuardian is an open-source, community-driven road intelligence platform that fuses computer vision (YOLOv8 trained on the RDD2022 dataset) with spatial graph routing (OSRM). It detects road structural defects, calculates multi-factor road risk scores, and routes vehicles along damage-avoiding corridors to preserve tires, suspensions, and passenger safety.
 
-- **AI-Powered Detection**: YOLOv8 model trained on RDD2022 dataset for automatic road damage classification
-- **Community Verification**: Crowd-sourced voting system to verify reported hazards
-- **Risk Scoring**: Multi-factor risk calculation (severity × recency × verification × proximity)
-- **Safe Route Planning**: Compare route alternatives by safety using OSRM routing engine
-- **Interactive Hazard Map**: Real-time visualization of reported road hazards
-- **Image-Based Reporting**: Upload photos for automatic damage type and severity detection
+---
 
-## Technology Stack
+## 📸 Platform Previews & Visual Results
 
-### Backend
-- **FastAPI**: Modern Python web framework
-- **SQLAlchemy**: ORM for database management
-- **SQLite**: Lightweight database (production can use PostgreSQL)
-- **Ultralytics YOLOv8**: Object detection for road damage
-- **OSRM**: Open Source Routing Machine for route planning
+### 1. Interactive Hazard Map & Real-Time Sentinel Radar
+Live geo-spatial defect mapping with severity filtering (1–5 scale), taxonomy tagging (`D00`, `D10`, `D20`, `D40`), and danger zone proximity circles.
 
-### Frontend
-- **React**: UI framework
-- **Vite**: Build tool and dev server
-- **Leaflet + React-Leaflet**: Interactive maps
-- **Axios**: HTTP client
+![RoadGuardian Hazard Map Overview](docs/images/hazard-map-overview.svg)
 
-## Project Structure
+---
 
-```
-RoadGuardian/
-├── backend/
-│   ├── app/
-│   │   ├── api/           # API endpoints
-│   │   │   ├── reports.py    # Report CRUD and voting
-│   │   │   └── routing.py    # Route comparison
-│   │   ├── core/          # Configuration
-│   │   │   ├── config.py     # Settings
-│   │   │   └── database.py   # DB connection
-│   │   ├── models/        # Database models
-│   │   │   └── report.py     # Report and Vote models
-│   │   ├── services/      # Business logic
-│   │   │   ├── detection.py  # YOLOv8 detection
-│   │   │   ├── risk.py       # Risk scoring
-│   │   │   └── routing.py    # OSRM routing
-│   │   └── main.py        # FastAPI app
-│   ├── requirements.txt
-│   └── .env.example
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── HazardMap.jsx     # Hazard visualization
-    │   │   ├── ReportForm.jsx   # Damage reporting
-    │   │   └── RoutePlanner.jsx # Route comparison
-    │   ├── App.jsx
-    │   └── main.jsx
-    ├── package.json
-    └── vite.config.js
-```
+### 2. Intelligent Safe-Corridor Navigation vs Standard Route
+Side-by-side trajectory evaluation calculating travel time, road defect frequency, and overall hazard risk reduction percentage.
 
-## Installation
+![Safe Route Planner Comparison](docs/images/route-planner-overview.svg)
+
+---
+
+### 3. Road Safety Analytics & Incident Intelligence
+Real-time defect category distributions, severity analysis, and municipal resolution velocity metrics.
+
+![Road Safety Analytics](docs/images/analytics-dashboard-overview.svg)
+
+---
+
+## 🔄 End-to-End System Architecture & Workflow
+
+The platform follows a multi-tiered pipeline transforming crowdsourced raw imagery into high-confidence navigation cost maps:
+
+![System Architecture and Workflow](docs/images/architecture-workflow.svg)
+
+### Operational Pipeline Breakdown:
+
+1. **Incident Ingestion (`/reports`)**:
+   - Device GPS coordinate acquisition with high-precision geolocation fallback.
+   - Road image capture with automated client-side preview and inference simulation.
+2. **AI Vision Inference Engine (`detection.py`)**:
+   - Neural classification against standard road damage taxonomies:
+     - `D00`: Longitudinal Cracks
+     - `D10`: Transverse Cracks
+     - `D20`: Alligator Cracks (Complex mesh fatigue)
+     - `D40`: Potholes (Structural road cavities)
+3. **Multi-Factor Risk Scoring (`risk.py`)**:
+   $$\text{Risk Score} = \min\left(1.0, \frac{\text{Severity}}{5.0} \times \text{Recency Factor} \times \text{Confidence Multiplier}\right)$$
+   - Weights community peer audits, municipal verification status, and decay curves over time.
+4. **Hazard-Aware OSRM Routing (`routing.py`)**:
+   - Evaluates road segments against proximate hazard clusters.
+   - Calculates dynamic penalty costs for damaged road links to generate bypass paths.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18, Vite 5, TailwindCSS, Framer Motion, Leaflet, React-Leaflet, Lucide Icons, Recharts |
+| **Backend** | FastAPI, Python 3.10+, SQLAlchemy, Pydantic v2, Uvicorn |
+| **Machine Learning** | Ultralytics YOLOv8, PyTorch, OpenCV, NumPy |
+| **Spatial Engine** | Open Source Routing Machine (OSRM), OpenStreetMap Tiles |
+| **CI / CD & Hosting** | GitHub Actions, GitHub Pages, Docker |
+
+---
+
+## 🚀 Quickstart & Local Installation
 
 ### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- pip
-- npm
+- **Node.js**: v18+ & npm
+- **Python**: 3.9+ & pip
 
-### Backend Setup
-
+### 1. Frontend Setup
 ```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy environment file
-cp .env.example .env
-
-# Run migrations (automatic on first run)
-```
-
-### Frontend Setup
-
-```bash
+# Navigate to frontend directory
 cd frontend
 
 # Install dependencies
 npm install
-```
 
-## Running the Application
-
-### Start Backend
-
-```bash
-cd backend
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-The API will be available at `http://localhost:8000`
-
-API docs: `http://localhost:8000/docs`
-
-### Start Frontend
-
-```bash
-cd frontend
+# Run Vite development server
 npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-The frontend will be available at `http://localhost:5173`
+### 2. Backend Setup
+```bash
+# Navigate to backend directory
+cd backend
 
-## API Endpoints
+# Create and activate virtual environment
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
 
-### Reports
-- `POST /reports/` - Create a new damage report
-- `GET /reports/` - List all reports (optionally filtered by location)
-- `POST /reports/{id}/vote` - Vote on a report (upvote/downvote)
-- `GET /reports/risk/segment` - Get risk score for a road segment
+# Install requirements
+pip install -r requirements.txt
 
-### Routing
-- `POST /routing/compare` - Compare route alternatives by safety
-- `POST /routing/route` - Get a single route from OSRM
-
-## Configuration
-
-Edit `backend/.env` to customize:
-
-- `DATABASE_URL`: Database connection string
-- `OSRM_BASE_URL`: OSRM server URL
-- `VERIFY_THRESHOLD`: Votes needed for auto-verification (default: 3)
-- `RISK_WEIGHT_*`: Weights for risk calculation factors
-- `REPORT_HALF_LIFE_HOURS`: Decay rate for recency factor (default: 168 hours = 7 days)
-- `DETOUR_THRESHOLD_RATIO`: Max acceptable detour for safe route (default: 1.5)
-
-## Risk Scoring Formula
-
-The risk score for a report is calculated as:
-
+# Start FastAPI server
+uvicorn app.main:app --reload --port 8000
 ```
-Risk = (severity/5 × W_severity) +
-       (recency_factor × W_recency) +
-       (verification_factor × W_verification) +
-       (proximity_factor × W_proximity)
-```
+API Documentation will be live at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-Where:
-- `severity`: 1-5 (user or AI-estimated)
-- `recency_factor`: Exponential decay based on report age
-- `verification_factor`: Based on vote count and verified status
-- `proximity_factor`: Inverse distance from query point
+---
 
-## Damage Types (RDD2022)
+## 🚢 Continuous Deployment Workflow
 
-- **D00**: Longitudinal Crack
-- **D10**: Transverse Crack
-- **D20**: Alligator Crack
-- **D40**: Pothole
+RoadGuardian includes an automated continuous deployment pipeline defined in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
-## Known Limitations
+- Every commit pushed to `master` automatically triggers the GitHub Actions workflow.
+- Dependencies are cached and validated via `npm ci`.
+- A minified production build is generated and deployed directly to **GitHub Pages**.
 
-1. **Model Accuracy**: We did not measure the AI model's accuracy on the test set. The YOLOv8 weights should be evaluated on RDD2022 test data and local road images.
+To enable hosting:
+1. Navigate to **Settings > Pages** on your GitHub repository.
+2. Under **Build and deployment > Source**, select **GitHub Actions**.
+3. Your deployment will be accessible at:
+   ```
+   https://<username>.github.io/RoadGuard/
+   ```
 
-2. **Risk Calibration**: Risk weights are judgment-based, not calibrated against crash data. Future work should calibrate against public crash records.
+---
 
-3. **Vote De-duplication**: Vote deduplication is best-effort based on IP address. More sophisticated trust models could improve resistance to spam.
-
-4. **Reporting Bias**: Report density follows where people report, not actual hazard distribution. Consider combining with passive sensing or periodic image sweeps.
-
-5. **Severity Estimation**: Current severity estimation is heuristic (based on damage size). A dedicated severity classifier would improve accuracy.
-
-## Future Work
-
-- Evaluate model accuracy on RDD2022 test split
-- Add dedicated severity classifier (two-stage pipeline)
-- Implement federated learning for multi-city deployment
-- Calibrate risk weights against crash data
-- Add passive sensing (accelerometer-based detection)
-- Implement more sophisticated trust/verification models
-- Support real-time route updates during navigation
-
-## Research References
-
-This project builds on research from the Road Damage Detection Challenge series:
-
-- **RDD2022 Dataset**: Arya et al. (2024). *Geoscience Data Journal* 11(4), 846–862
-- **YOLOv8**: Ultralytics - https://github.com/ultralytics/ultralytics
-- **OSRM**: Luxen & Vetter (2011). *ACM SIGSPATIAL GIS '11*
-- **Crowdsourced Verification**: Inspired by CommuniSense (Santani et al., 2015)
-- **Risk-Aware Routing**: Krumm & Horvitz (2017). *AAAI 2017*
-
-See `RESEARCH.md` for full bibliography.
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Team
-
-RoadGuardian is developed by **Team X_Coder**
-
-## Acknowledgments
-
-- RDD2022 dataset from Sekimoto Lab, University of Tokyo
-- Ultralytics for YOLOv8 framework
-- OSRM project for routing engine
-- OpenStreetMap for map data
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
